@@ -1,4 +1,15 @@
 # ==========================================
+# FUNCIONES AUXILIARES
+# ==========================================
+
+def calcular_densidad(pais):
+    """Calcula habitantes por km2 evitando division por cero."""
+    if pais["superficie"] > 0:
+        return pais["poblacion"] / pais["superficie"]
+    return 0.0
+
+
+# ==========================================
 # FILTROS
 # ==========================================
 
@@ -17,7 +28,11 @@ def filtrar_por_continente(paises):
     if len(resultado) > 0:
         print("\nPaises encontrados:")
         for pais in resultado:
-            print(f"- {pais['nombre']}: {pais['poblacion']} habitantes - {pais['superficie']} km2")
+            densidad = calcular_densidad(pais)
+            print(
+                f"- {pais['nombre']}: {pais['poblacion']} habitantes | "
+                f"{pais['superficie']} km2 | Densidad: {densidad:.2f} hab/km2"
+            )
     else:
         print("No se encontraron paises en ese continente.")
 
@@ -51,7 +66,8 @@ def filtrar_por_poblacion(paises):
     if len(resultado) > 0:
         print("\nPaises encontrados:")
         for pais in resultado:
-            print(f"- {pais['nombre']}: {pais['poblacion']} habitantes")
+            densidad = calcular_densidad(pais)
+            print(f"- {pais['nombre']}: {pais['poblacion']} habitantes (Densidad: {densidad:.2f} hab/km2)")
     else:
         print("No se encontraron paises dentro del rango ingresado.")
 
@@ -85,7 +101,8 @@ def filtrar_por_superficie(paises):
     if len(resultado) > 0:
         print("\nPaises encontrados:")
         for pais in resultado:
-            print(f"- {pais['nombre']}: {pais['superficie']} km2")
+            densidad = calcular_densidad(pais)
+            print(f"- {pais['nombre']}: {pais['superficie']} km2 (Densidad: {densidad:.2f} hab/km2)")
     else:
         print("No se encontraron paises dentro del rango ingresado.")
 
@@ -284,6 +301,25 @@ def promedio_superficie(paises):
     print(f"Promedio de superficie general: {promedio:.2f} km2")
 
 
+def extremos_densidad(paises):
+    """Calcula y muestra el pais con mayor y menor densidad poblacional."""
+    if len(paises) == 0:
+        return
+
+    mas_denso = paises[0]
+    menos_denso = paises[0]
+
+    for pais in paises:
+        densidad_actual = calcular_densidad(pais)
+        if densidad_actual > calcular_densidad(mas_denso):
+            mas_denso = pais
+        if densidad_actual < calcular_densidad(menos_denso):
+            menos_denso = pais
+
+    print(f"Mayor densidad poblacional: {mas_denso['nombre']} ({calcular_densidad(mas_denso):.2f} hab/km2).")
+    print(f"Menor densidad poblacional: {menos_denso['nombre']} ({calcular_densidad(menos_denso):.2f} hab/km2).")
+
+
 def paises_por_continente(paises):
     if len(paises) == 0:
         print("No hay paises cargados.")
@@ -327,4 +363,5 @@ def mostrar_estadisticas(paises):
     pais_menor_poblacion(paises)
     promedio_poblacion(paises)
     promedio_superficie(paises)
+    extremos_densidad(paises)
     paises_por_continente(paises)
